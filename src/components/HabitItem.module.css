@@ -1,0 +1,19 @@
+.habitItem {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  width: 30%;
+  max-height: 800px;
+  overflow-y: scroll;
+}
+
+.emphasized {
+  display: inline-block;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.chains {
+  display: flex;
+  flex-wrap: wrap;
+}
