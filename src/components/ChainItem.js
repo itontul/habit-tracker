@@ -1,52 +1,66 @@
-import React, { useEffect, useState } from 'react'
-import { useGlobalContext } from '../util/context'
-import styles from './ChainItem.module.css'
+import React, { useEffect, useState } from "react";
+import { useGlobalContext } from "../util/context";
+import styles from "./ChainItem.module.css";
 
-const ChainItem = ({ id, date, interval, complete, index }) => {
-  const { habitList, completeDay } = useGlobalContext()
-  const dates = habitList.find((item) => item.id === id).array[index]
-  // const [input, setInput] = useState(array)
-  // const checkCounter = ({ number, checked }) => {
-  //   setInput(
-  //     input.map((item) => {
-  //       if (item.number !== number) {
-  //         return item
-  //       } else {
-  //         completeDay({ id, date, day: item.number })
-  //         return { ...item, checked: checked }
-  //       }
-  //     })
-  //   )
-  // }
+const ChainItem = ({ id, array, date, interval, times, index }) => {
+  const { habitList, completeDay, completeInterval } = useGlobalContext();
+  const [complete, setComplete] = useState(false);
 
-  // const checkedCount = input.filter((item) => item.checked === true)
+  let dates;
+  if (interval !== "daily") {
+    dates = array[index];
+  } else {
+    dates = array;
+  }
+  const [input, setInput] = useState(dates);
+  const checkCounter = (date) => {
+    setInput(
+      input.map((item) => {
+        if (item.date !== date) {
+          return item;
+        } else {
+          completeDay({ date, id });
+          return { ...item, complete: !item.complete };
+        }
+      })
+    );
+  };
 
-  // useEffect(() => {
-  //   if (checkedCount.length >= times) {
-  //     onComplete({ date, completed: true })
-  //   } else {
-  //     onComplete({ date, completed: false })
-  //   }
-  // }, [checkedCount.length, date, times])
+  const checkedCount = input.filter((item) => item.complete === true);
+
+  useEffect(() => {
+    if (interval !== "daily" && checkedCount.length >= times) {
+      completeInterval({ id, completed: true });
+      setComplete(true);
+    } else {
+      completeInterval({ id, completed: false });
+      setComplete(false);
+    }
+  }, [checkedCount.length, id, times]);
 
   return (
     <div
       className={
-        complete ? `${styles.chain} ${styles.completed}` : styles.chain
+        complete ? `${styles.chain}  ${styles.completed}` : styles.chain
       }
     >
       {dates.map((i, index) => {
         return (
           <div key={index} className={styles.inputContainer}>
             <label>{i.date}</label>
-            <input type='checkbox' />
+            <input
+              type="checkbox"
+              onChange={() => {
+                checkCounter(i.date);
+              }}
+            />
           </div>
-        )
+        );
       })}
 
-      {/* {interval !== 'daily' && <p>Completed: {checkedCount.length} </p>} */}
+      {interval !== "daily" && <p>Completed: {checkedCount.length} </p>}
     </div>
-  )
-}
+  );
+};
 
-export default ChainItem
+export default ChainItem;
